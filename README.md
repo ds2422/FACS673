@@ -26,6 +26,12 @@ The first iteration focuses on building a functional Minimum Viable Product (MVP
 * **Deployment**: The application will be deployed and accessible to a limited beta group via Vercel and Render.
 
 
+## Stakeholders
+
+* Students: Want to quickly grasp the main points of long articles, research papers, or lecture notes to save time while studying and preparing for exams. They need a tool to make their learning more efficient.
+* Working Professionals: Seek to stay updated on industry trends, synthesize key takeaways from reports, and quickly digest meeting transcripts to make faster, more informed decisions.
+* Researchers: Need to review and compare a large volume of academic papers to identify key findings, methodologies, and gaps in the literature. They require a tool to streamline their literature review process.
+
 
 
 
