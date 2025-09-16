@@ -31,7 +31,7 @@ The first iteration focuses on building a functional Minimum Viable Product (MVP
 * Working Professionals: Seek to stay updated on industry trends, synthesize key takeaways from reports, and quickly digest meeting transcripts to make faster, more informed decisions.
 * Researchers: Need to review and compare a large volume of academic papers to identify key findings, methodologies, and gaps in the literature. They require a tool to streamline their literature review process.
 
-  ## Detailed User Persona
+## Detailed User Persona
 
 **Name: Alex Chen**
 **Background:**
