@@ -52,7 +52,71 @@ Alex, a 21-year-old computer science student at a major university, juggles mult
 * To rapidly synthesize information for his capstone project literature review.
 * To stay on top of new developments in his field without sacrificing sleep.
 
+---
 
+##  Initial Product Backlog
+📍 [Pivotal Tracker Project](https://www.pivotaltracker.com/projects/YOUR_PROJECT_ID)
 
+| #  | Title | User Story | Story Points |
+|----|-------|------------|--------------|
+| 1  | Single URL Summarization | “As a user, I want to paste a single URL…so that I can quickly get the main points.” | 3 |
+| 2  | Document Upload | “As a student, I want to upload a text/PDF…so that I can get a summary of my notes.” | 5 |
+| 3  | View Generated Summary | “As a user, I want to see the generated summary clearly…” | 2 |
+| 4  | Navigation Bar | “As a user, I want to navigate the site easily…” | 1 |
+| 5  | Create Account | “As a user, I want to sign up with email/password…” | 3 |
+| 6  | User Login | “As a user, I want to log in…” | 2 |
+| 7  | Compare Two Sources | “As a researcher, I want to input two sources…” | 8 |
+| 8  | Formatted Summaries | “As a user, I want summaries with headings/bullets…” | 2 |
+| 9  | Transcript Summarization | “As a student, I want to upload a transcript…” | 5 |
+| 10 | Mobile-Friendly UI | “As a user, I want the website to work well on my phone…” | 8 |
+
+---
+
+## Backlog Ordering Rationale
+- **Top Priority (1–3):** Core summarization functionality → MVP backbone  
+- **Next (4–6):** Navigation + authentication → personalization  
+- **Then (7–8):** Comparative summaries + formatting → differentiation & usability  
+- **Later (9–10):** Extra-value features → versatility & mobile-first UX  
+
+---
+
+## Definition of Ready (DoR)
+A backlog item is **ready for development** when:  
+- Clear **title** and full **user story** (As a…, I want…, so that…)  
+- Acceptance criteria included  
+- Estimated with story points  
+- Dependencies identified, no blockers  
+- Testable & demonstrable outcome  
+
+---
+
+## Estimation
+We used **Planning Poker** for team-based estimation.  
+
+**Estimation Scale:**  
+- **Small (1–3):** UI tasks, displaying summaries  
+- **Medium (5):** File parsing, transcript processing  
+- **Large (8):** Comparative summarization, mobile responsiveness  
+
+**Estimated Backlog:**  
+- Single URL Summarization → 3  
+- Document Upload Summarization → 5  
+- View Generated Summary → 2  
+- Website Navigation → 1  
+- User Account Creation → 3  
+- User Login → 2  
+- Compare Two Sources → 8  
+- Formatted Summaries → 2  
+- Transcript Summarization → 5  
+- Mobile-Friendly UI → 8  
+
+---
+
+## 🚀 Tech Stack
+- **Frontend:** TypeScript + Tailwind CSS  
+- **Backend:** Django (Python)  
+- **AI Model:** Hugging Face Transformers  
+- **Database:** PostgreSQL  
+- **Deployment:** Vercel (frontend), Render (backend)  
 
 
