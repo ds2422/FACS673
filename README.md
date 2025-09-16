@@ -55,7 +55,9 @@ Alex, a 21-year-old computer science student at a major university, juggles mult
 ---
 
 ##  Initial Product Backlog
-📍 [Pivotal Tracker Project](https://www.pivotaltracker.com/projects/YOUR_PROJECT_ID)
+📍 Instead of Pivot Tracker we did it using Jira: 
+[Jira Link](https://njit-team-fhi2acbj.atlassian.net/jira/software/projects/CT/boards/2?atlOrigin=eyJpIjoiNmYxYjJiMmYwYzg1NGZkN2FlZmRlMzBlOTlhZTM3OTciLCJwIjoiaiJ9)
+
 
 | #  | Title | User Story | Story Points |
 |----|-------|------------|--------------|
