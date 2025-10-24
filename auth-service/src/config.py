@@ -1,0 +1,27 @@
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+class Settings:
+    # Application
+    APP_NAME = "Auth Service"
+    DEBUG = os.getenv("DEBUG", "False").lower() in ("true", "1", "t")
+    VERSION = "1.0.0"
+    
+    # Database
+    DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./auth.db")
+    
+    # JWT
+    SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-here-change-this-in-production")
+    ALGORITHM = os.getenv("ALGORITHM", "HS256")
+    ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
+    
+    # CORS
+    CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*").split(",")
+    
+    # API
+    API_PREFIX = "/api/v1"
+    
+settings = Settings()

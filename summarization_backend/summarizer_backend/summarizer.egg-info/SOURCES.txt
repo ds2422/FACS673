@@ -1,0 +1,16 @@
+setup.py
+summarizer/__init__.py
+summarizer/settings.py
+summarizer/urls.py
+summarizer/wsgi.py
+summarizer.egg-info/PKG-INFO
+summarizer.egg-info/SOURCES.txt
+summarizer.egg-info/dependency_links.txt
+summarizer.egg-info/requires.txt
+summarizer.egg-info/top_level.txt
+summarizer/summarizations/__init__.py
+summarizer/summarizations/admin.py
+summarizer/summarizations/models.py
+summarizer/summarizations/serializers.py
+summarizer/summarizations/urls.py
+summarizer/summarizations/views.py
