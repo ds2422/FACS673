@@ -12,7 +12,9 @@ urlpatterns = [
     
     # File detail, update, delete endpoints
     path('<int:pk>/', views.FileDetailView.as_view(), name='file-detail'),
-    
+
+
+    # path('health/', views.health)
     # Download file endpoint (optional, can be implemented later)
     # path('<int:pk>/download/', views.FileDownloadView.as_view(), name='file-download'),
 ]

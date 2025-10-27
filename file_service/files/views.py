@@ -2,6 +2,7 @@ import os
 import logging
 import mimetypes
 from django.conf import settings
+from django.http import JsonResponse
 from rest_framework import status, permissions, authentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -9,6 +10,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from .authentication import JWTAuthentication
 from .models import UploadedFile
 from .serializers import UploadedFileSerializer, FileUploadSerializer
+
 
 logger = logging.getLogger(__name__)
 
@@ -301,6 +303,7 @@ class FileDetailView(APIView):
                 'data': serializer.data
             }
         )
+
     
     def delete(self, request, pk, *args, **kwargs):
         """Delete a file."""
@@ -318,3 +321,6 @@ class FileDetailView(APIView):
             {'status': 'success', 'message': 'File deleted successfully'},
             status=status.HTTP_204_NO_CONTENT
         )
+
+def health(request):
+    return JsonResponse({"status": "healthy"})

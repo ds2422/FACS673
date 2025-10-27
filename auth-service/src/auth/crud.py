@@ -2,6 +2,15 @@ from sqlalchemy.orm import Session
 from . import models, schemas
 from . import security
 
+from datetime import datetime, timedelta
+from jose import JWTError, jwt
+from src.config import settings
+from fastapi import HTTPException, status
+
+SECRET_KEY = settings.SECRET_KEY
+ALGORITHM = settings.ALGORITHM
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
+
 def get_user(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
 
@@ -40,3 +49,20 @@ def get_user_by_token(db: Session, token: str):
     if not email:
         return None
     return get_user_by_email(db, email=email)
+
+def create_access_token(data: dict, expires_delta: timedelta = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+
+    to_encode.update({
+        "exp": expire,
+        "iat": datetime.utcnow(),
+        "iss": "auth-service",   # issuer
+        # "aud": "auth-service", # ❌ remove this line (caused your InvalidAudienceError)
+    })
+
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
