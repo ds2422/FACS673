@@ -28,6 +28,7 @@ SERVICES = {
 }
 
 
+
 # Helper function to forward requests
 async def forward_request(service_name: str, path: str, request: Request):
     base_url = SERVICES.get(service_name)
@@ -35,15 +36,26 @@ async def forward_request(service_name: str, path: str, request: Request):
         raise HTTPException(status_code=404, detail=f"Service '{service_name}' not found")
 
     url = f"{base_url}/{path}"
-    async with httpx.AsyncClient() as client:
-        method = request.method.lower()
-        data = await request.body()
-        headers = dict(request.headers)
+    print(f"➡️ Forwarding {request.method} request to {url}")  # Debug log
 
-        response = await client.request(method, url, content=data, headers=headers)
-        return response
+    try:
+        async with httpx.AsyncClient() as client:
+            method = request.method.lower()
+            data = await request.body()
+            headers = dict(request.headers)
+            headers.pop("host", None)
 
+            response = await client.request(method, url, content=data, headers=headers)
 
+            print(f"✅ Response from {url}: {response.status_code}")  # Debug log
+
+            return response
+    except httpx.RequestError as e:
+        print(f"❌ Failed to connect to {url}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to connect to {url}")
+    except Exception as e:
+        print(f"💥 Unexpected error in gateway: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 

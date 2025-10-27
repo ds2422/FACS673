@@ -116,12 +116,21 @@ REST_FRAMEWORK = {
 
 # JWT Settings
 SIMPLE_JWT = {
-    'AUTH_HEADER_TYPES': ('Bearer',),
-    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
-    'VERIFYING_KEY': os.getenv('JWT_VERIFYING_KEY', 'your-verifying-key-here'),
-    'AUDIENCE': os.getenv('JWT_AUDIENCE', 'file-service'),
-    'ISSUER': os.getenv('JWT_ISSUER', 'auth-service'),
-    'ALGORITHM': os.getenv('JWT_ALGORITHM', 'HS256'),
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+
+    # Public key or secret used to verify tokens (if using asymmetric key set VERIFYING_KEY)
+    "VERIFYING_KEY": os.getenv("JWT_VERIFYING_KEY", None),
+
+    # Algorithm used to sign tokens
+    "ALGORITHM": os.getenv("JWT_ALGORITHM", "HS256"),
+
+    # Issuer and Audience: configure these explicitly or set to None
+    "ISSUER": os.getenv("JWT_ISSUER", None),        # e.g. "auth-service"
+    "AUDIENCE": os.getenv("JWT_AUDIENCE", None),    # e.g. "file-service"
+
+    # Whether to enforce checking the aud claim. Set to True only if tokens include aud.
+    "VERIFY_AUDIENCE": os.getenv("JWT_VERIFY_AUDIENCE", "False") == "True",
 }
 
 # CORS settings
