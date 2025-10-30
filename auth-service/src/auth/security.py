@@ -56,7 +56,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None, a
         "exp": expire,
         "iat": datetime.utcnow(),
         "iss": "auth-service",  # issuer name
-        # ❌ removed "aud" — it caused InvalidAudienceError in other microservices
+        "aud" : "file-service"
     })
    
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)

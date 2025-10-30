@@ -114,23 +114,36 @@ REST_FRAMEWORK = {
     ],
 }
 
-# JWT Settings
-SIMPLE_JWT = {
-    "AUTH_HEADER_TYPES": ("Bearer",),
-    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+# JWT Settings for auth-service integration
+JWT_AUTH = {
+    'JWT_ALGORITHM': os.getenv('JWT_ALGORITHM', 'HS256'),
+    'JWT_VERIFYING_KEY': os.getenv('JWT_VERIFYING_KEY', 'django-insecure-your-secret-key-here'),
+    'JWT_ISSUER': os.getenv('JWT_ISSUER', 'auth-service'),
+    'JWT_AUDIENCE': os.getenv('JWT_AUDIENCE', 'file-service'),
+    'JWT_VERIFY_AUDIENCE': os.getenv('JWT_VERIFY_AUDIENCE', 'True') == 'True',
+    'JWT_LEEWAY': int(os.getenv('JWT_LEEWAY', '60')),  # 60 seconds leeway for clock skew
+}
 
-    # Public key or secret used to verify tokens (if using asymmetric key set VERIFYING_KEY)
-    "VERIFYING_KEY": os.getenv("JWT_VERIFYING_KEY", None),
-
-    # Algorithm used to sign tokens
-    "ALGORITHM": os.getenv("JWT_ALGORITHM", "HS256"),
-
-    # Issuer and Audience: configure these explicitly or set to None
-    "ISSUER": os.getenv("JWT_ISSUER", None),        # e.g. "auth-service"
-    "AUDIENCE": os.getenv("JWT_AUDIENCE", None),    # e.g. "file-service"
-
-    # Whether to enforce checking the aud claim. Set to True only if tokens include aud.
-    "VERIFY_AUDIENCE": os.getenv("JWT_VERIFY_AUDIENCE", "False") == "True",
+# REST Framework settings
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'files.authentication.JWTAuthentication',  # Use our custom JWT auth
+        'rest_framework.authentication.SessionAuthentication',  # Fallback
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ],
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.MultiPartParser',
+        'rest_framework.parsers.FormParser',
+    ],
+    'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20,
 }
 
 # CORS settings
@@ -156,8 +169,10 @@ ALLOWED_FILE_TYPES = [
 ]
 # file_service/file_service/settings.py
 
-# Add these settings
-JWT_VERIFYING_KEY = os.getenv('JWT_VERIFYING_KEY', 'django-insecure-your-secret-key-here')
+# JWT Settings (for direct access in code)
+JWT_VERIFYING_KEY = os.getenv('JWT_VERIFYING_KEY', SECRET_KEY)
 JWT_ALGORITHM = os.getenv('JWT_ALGORITHM', 'HS256')
 JWT_ISSUER = os.getenv('JWT_ISSUER', 'auth-service')
 JWT_AUDIENCE = os.getenv('JWT_AUDIENCE', 'file-service')
+JWT_VERIFY_AUDIENCE = os.getenv('JWT_VERIFY_AUDIENCE', 'True') == 'True'
+JWT_LEEWAY = int(os.getenv('JWT_LEEWAY', '60'))
