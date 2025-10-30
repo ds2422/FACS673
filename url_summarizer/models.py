@@ -14,7 +14,7 @@ class User(Base):
     hashed_password = Column(String)
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    summaries = relationship("Summary", back_populates="owner")
+    # summaries = relationship("Summary", back_populates="owner")
 
 
 class Summary(Base):
@@ -27,6 +27,6 @@ class Summary(Base):
     summary = Column(Text)
     summary_length = Column(Integer, default=5)
     created_at = Column(DateTime, default=datetime.utcnow)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(Integer, nullable=True)  # Make user_id optional
 
-    owner = relationship("User", back_populates="summaries")
+    # owner = relationship("User", back_populates="summaries")

@@ -43,7 +43,7 @@ def get_password_hash(password: str) -> str:
 # JWT Token Functions
 # ------------------------
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None, audience: Optional[str] = None) -> str:
     """
     Create a JWT access token.
     The token will include sub, user_id, iss, exp, and iat claims.
@@ -58,25 +58,47 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
         "iss": "auth-service",  # issuer name
         # ❌ removed "aud" — it caused InvalidAudienceError in other microservices
     })
-    
+   
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
 
-def verify_token(token: str) -> Optional[dict]:
+def verify_token(token: str, audience: Optional[str] = None) -> Optional[dict]:
     """
     Decode and verify a JWT token.
-    Returns the payload dict if valid, otherwise None.
+    - Verifies signature, expiration, and optionally audience + issuer.
+    - Returns payload if valid, or raises HTTPException if invalid.
     """
     try:
-        # ✅ Disable audience check to prevent errors in other services
+        # Enable audience check only if an audience is specified
+        decode_options = {"verify_aud": bool(audience)}
+
         payload = jwt.decode(
             token,
             SECRET_KEY,
             algorithms=[ALGORITHM],
-            options={"verify_aud": False}
+            audience=audience,          # Will verify only if not None
+            issuer=JWT_ISSUER,
+            options=decode_options
         )
+
+        # Optional: verify token expiration manually
+        exp = payload.get("exp")
+        if exp and datetime.utcnow().timestamp() > exp:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Token has expired"
+            )
+
         return payload
+
+    except ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token has expired"
+        )
     except JWTError as e:
-        print(f"❌ JWT verification failed: {str(e)}")
-        return None
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Invalid token: {str(e)}"
+        )

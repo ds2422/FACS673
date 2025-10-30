@@ -17,12 +17,19 @@ class JWTAuthentication(authentication.BaseAuthentication):
                 return None
                 
             # Verify the token locally
+            # Only verify audience if it's set in settings
+            options = {
+                'verify_aud': hasattr(settings, 'JWT_AUDIENCE') and bool(settings.JWT_AUDIENCE),
+                'verify_iss': hasattr(settings, 'JWT_ISSUER') and bool(settings.JWT_ISSUER)
+            }
+            
             payload = jwt.decode(
                 token,
                 settings.JWT_VERIFYING_KEY,
                 algorithms=[settings.JWT_ALGORITHM],
-                audience=settings.JWT_AUDIENCE,
-                issuer=settings.JWT_ISSUER
+                audience=getattr(settings, 'JWT_AUDIENCE', None),
+                issuer=getattr(settings, 'JWT_ISSUER', None),
+                options=options
             )
             
             # Get or create the user

@@ -7,6 +7,7 @@ class Summary(models.Model):
     summary_text = models.TextField(blank=True)
     is_public = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+    user_id = models.IntegerField() 
 
     def __str__(self):
         return self.title

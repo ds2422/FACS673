@@ -50,19 +50,31 @@ def get_user_by_token(db: Session, token: str):
         return None
     return get_user_by_email(db, email=email)
 
-def create_access_token(data: dict, expires_delta: timedelta = None):
+def create_access_token(
+    data: dict,
+    expires_delta: timedelta = None,
+    audience: str = None
+):
+    """
+    Create a JWT access token with optional audience support.
+    Works for multiple microservices (file_service, url_summarizer, etc.).
+    """
     to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
 
+    expire = datetime.utcnow() + (
+        expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    )
+
+    # Add standard JWT claims
     to_encode.update({
         "exp": expire,
         "iat": datetime.utcnow(),
         "iss": "auth-service",   # issuer
-        # "aud": "auth-service", # ❌ remove this line (caused your InvalidAudienceError)
     })
+
+    # ✅ Add audience dynamically if provided
+    if audience:
+        to_encode["aud"] = audience  # e.g., "file-service" or "url-summarizer"
 
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt

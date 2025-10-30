@@ -2,7 +2,8 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
-from models import Base
+from url_summarizer.models import Base
+
 
 # Explicitly load the .env from this directory
 env_path = os.path.join(os.path.dirname(__file__), ".env")
@@ -33,4 +34,8 @@ def get_db():
         db.close()
 
 def create_tables():
+    # Drop all tables first to handle schema changes
+    Base.metadata.drop_all(bind=engine)
+    # Create all tables with the updated schema
     Base.metadata.create_all(bind=engine)
+    print("✅ Database tables recreated with updated schema")

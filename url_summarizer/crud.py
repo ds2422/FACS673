@@ -1,13 +1,18 @@
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 
-import models, schemas
+from url_summarizer import models, schemas
+
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def get_user(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
+
+def user_exists(db: Session, user_id: int) -> bool:
+    """Check if a user exists in the database."""
+    return db.query(models.User).filter(models.User.id == user_id).first() is not None
 
 def get_user_by_email(db: Session, email: str):
     return db.query(models.User).filter(models.User.email == email).first()
