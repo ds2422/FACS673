@@ -24,12 +24,19 @@ class CustomJWTAuthentication(authentication.BaseAuthentication):
         try:
             payload = jwt.decode(
                 token,
-                settings.SECRET_KEY,
-                algorithms=["HS256"],
-                options={"verify_aud": False}
+                settings.JWT_CONFIG["SIGNING_KEY"],
+                algorithms=[settings.JWT_CONFIG["ALGORITHM"]],
+                audience=settings.JWT_CONFIG["AUDIENCE"],
+                issuer=settings.JWT_CONFIG["ISSUER"]
             )
-        except InvalidTokenError:
-            raise exceptions.AuthenticationFailed("Invalid token")
+        except jwt.ExpiredSignatureError:
+            raise exceptions.AuthenticationFailed("Token has expired")
+        except jwt.InvalidAudienceError:
+            raise exceptions.AuthenticationFailed("Invalid token audience")
+        except jwt.InvalidIssuerError:
+            raise exceptions.AuthenticationFailed("Invalid token issuer")
+        except jwt.InvalidTokenError as e:
+            raise exceptions.AuthenticationFailed(f"Invalid token: {str(e)}")
 
         # ✅ Create a lightweight user object compatible with DRF
         class AuthUser:

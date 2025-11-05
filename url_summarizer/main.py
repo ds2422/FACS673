@@ -53,13 +53,33 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     Verify JWT token issued by auth-service and extract user info.
     """
     try:
-        payload = jwt.decode(
-            token,
-            SECRET_KEY,
-            algorithms=[ALGORITHM],
-            audience="url-summarizer",   # ✅ Expected audience
-            issuer="auth-service"        # ✅ Must match issuer from auth-service
-        )
+        # Accept either 'url-summarizer' or 'file-service' as valid audiences
+        try:
+            # First try with url-summarizer audience
+            payload = jwt.decode(
+                token,
+                SECRET_KEY,
+                algorithms=[ALGORITHM],
+                audience="url-summarizer",
+                issuer="auth-service"
+            )
+        except jwt.JWTClaimsError as e:
+            if "Invalid audience" in str(e):
+                # If that fails, try with file-service audience
+                try:
+                    payload = jwt.decode(
+                        token,
+                        SECRET_KEY,
+                        algorithms=[ALGORITHM],
+                        audience="file-service",
+                        issuer="auth-service"
+                    )
+                except jwt.JWTError as inner_e:
+                    # If both fail, raise the original error
+                    raise jwt.JWTClaimsError("Invalid token audience") from e
+            else:
+                # Re-raise if it's a different JWT error
+                raise
 
         user_id = payload.get("user_id")
         email = payload.get("sub")

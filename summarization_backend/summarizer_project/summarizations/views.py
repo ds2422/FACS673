@@ -3,8 +3,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from rest_framework.parsers import MultiPartParser, FormParser
+from django.contrib.auth import get_user_model
 from .models import Summary
-from .serializers import SummarySerializer, SummaryCreateSerializer, SummaryUpdateSerializer
+from .serializers import SummarySerializer, SummaryCreateSerializer, SummaryUpdateSerializer, UserSerializer
 from summarizer_project.utils.jwt_verify import verify_jwt_token
 from summarizer_project.utils.text_summarizer import summarize_large_text
   # ✅ your summarizer function
@@ -100,6 +101,17 @@ class SummaryDetailView(APIView):
         summary = get_object_or_404(Summary, pk=pk, user_id=user_id)
         summary.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class UserListView(APIView):
+    """List all users (admin only)"""
+    permission_classes = [permissions.IsAdminUser]
+
+    def get(self, request):
+        User = get_user_model()
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
 
 
 class PublicSummaryListView(APIView):

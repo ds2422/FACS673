@@ -88,7 +88,7 @@ REST_FRAMEWORK = {
 }
 
 # ✅ JWT Configuration (use the same SIGNING_KEY as your auth-service)
-SIMPLE_JWT = {
+JWT_CONFIG = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "ALGORITHM": "HS256",
@@ -96,6 +96,8 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
     "USER_ID_FIELD": "id",      # field on your User model
     "USER_ID_CLAIM": "user_id", # <-- claim name from FastAPI token
+    "AUDIENCE": "url-summarizer",  # Must match the audience in the token
+    "ISSUER": "auth-service",      # Must match the issuer in the token
 }
 
 # Password validation

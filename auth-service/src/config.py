@@ -11,7 +11,19 @@ class Settings:
     VERSION = "1.0.0"
     
     # Database
-    DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./auth.db")
+    DB_ENGINE = os.getenv("DB_ENGINE", "postgresql")
+    DB_USER = os.getenv("DB_USER", "postgres")
+    DB_PASSWORD = os.getenv("DB_PASSWORD", "")
+    DB_HOST = os.getenv("DB_HOST", "localhost")
+    DB_PORT = os.getenv("DB_PORT", "5432")
+    DB_NAME = os.getenv("DB_NAME", "auth_service_db")
+    
+    # Construct the database URL
+    if DB_ENGINE == "postgresql":
+        DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    else:
+        # Fallback to SQLite if not PostgreSQL
+        DATABASE_URL = "sqlite:///./auth.db"
     
     # JWT
     SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-here-change-this-in-production")
