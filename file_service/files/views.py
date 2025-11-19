@@ -242,7 +242,7 @@ class FileUploadView(APIView):
                 'line_count': line_count,
                 'file_size_kb': round(file_size_kb, 2),
                 'summary': summary,
-                'content_preview': (content[:500] if content and len(content) > 500 else content) if content else None
+                'content_preview': (content[:2000] if content and len(content) > 2000 else content) if content else None
             }
             
         except Exception as e:

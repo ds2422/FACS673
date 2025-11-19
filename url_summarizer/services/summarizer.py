@@ -83,7 +83,7 @@ class URLSummarizer:
             logger.error(f"Error processing webpage: {e}")
             return f"Error processing content: {str(e)}"
 
-    def _summarize_text(self, text: str, num_sentences: int = 5) -> str:
+    def _summarize_text(self, text: str, num_sentences: int = 20) -> str:
         """Generate a summary from the given text using basic frequency analysis"""
         try:
             # Tokenize into sentences
@@ -133,7 +133,7 @@ class URLSummarizer:
             logger.error(f"Error in summarization: {e}")
             return "Error generating summary."
 
-    async def summarize(self, url: str, summary_length: int = 5) -> dict:
+    async def summarize(self, url: str, summary_length: int = 20) -> dict:
         """Main method to summarize content from a URL"""
         try:
             logger.info(f"Processing URL: {url}")
@@ -143,7 +143,7 @@ class URLSummarizer:
                 raise ValueError("URL cannot be empty")
                 
             if not isinstance(summary_length, int) or summary_length < 1:
-                summary_length = 5
+                summary_length = 50
                 
             # Check if it's a YouTube URL
             video_id = self._get_youtube_video_id(url)
