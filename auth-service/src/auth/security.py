@@ -11,7 +11,7 @@ load_dotenv()
 # 🔐 Security configuration
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-your-secret-key-here")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60))
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 1440))  # 24 hours
 JWT_ISSUER = os.getenv("JWT_ISSUER", "auth-service")
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -57,7 +57,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None, a
         "exp": expire,
         "iat": datetime.utcnow(),
         "iss": "auth-service",  # issuer name
-        "aud": audience or os.getenv("JWT_DEFAULT_AUDIENCE", "file-service","url_summarizer")  # Use provided audience or default from env
+        "aud": audience or os.getenv("JWT_DEFAULT_AUDIENCE", "file-service")  # Use provided audience or default from env
     })
    
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)

@@ -10,11 +10,12 @@ urlpatterns = [
     # List all files for the authenticated user
     path('', views.FileListView.as_view(), name='file-list'),
     
+    # File history endpoint with pagination
+    path('history/', views.FileHistoryView.as_view(), name='file-history'),
+    
     # File detail, update, delete endpoints
     path('<int:pk>/', views.FileDetailView.as_view(), name='file-detail'),
 
-
-    # path('health/', views.health)
-    # Download file endpoint (optional, can be implemented later)
-    # path('<int:pk>/download/', views.FileDownloadView.as_view(), name='file-download'),
+    # Health check endpoint
+    path('health/', views.health, name='health'),
 ]

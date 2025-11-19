@@ -38,6 +38,30 @@ def get_summaries(db: Session, skip: int = 0, limit: int = 100):
 def get_user_summaries(db: Session, user_id: int, skip: int = 0, limit: int = 100):
     return db.query(models.Summary).filter(models.Summary.user_id == user_id).offset(skip).limit(limit).all()
 
+def get_user_summaries_ordered(db: Session, user_id: int, skip: int = 0, limit: int = 100):
+    """Get user summaries ordered by most recent first"""
+    return db.query(models.Summary)\
+        .filter(models.Summary.user_id == user_id)\
+        .order_by(models.Summary.created_at.desc())\
+        .offset(skip)\
+        .limit(limit)\
+        .all()
+
+def get_user_summary_by_id(db: Session, summary_id: int, user_id: int):
+    """Get a specific summary belonging to a user"""
+    return db.query(models.Summary)\
+        .filter(models.Summary.id == summary_id, models.Summary.user_id == user_id)\
+        .first()
+
+def delete_user_summary(db: Session, summary_id: int, user_id: int):
+    """Delete a specific summary belonging to a user"""
+    db_summary = get_user_summary_by_id(db, summary_id, user_id)
+    if db_summary:
+        db.delete(db_summary)
+        db.commit()
+        return True
+    return False
+
 def create_user_summary(db: Session, summary: schemas.SummaryCreate, user_id: int):
     db_summary = models.Summary(**summary.dict(), user_id=user_id)
     db.add(db_summary)

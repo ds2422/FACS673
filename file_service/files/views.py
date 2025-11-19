@@ -2,6 +2,7 @@ import os
 import logging
 import mimetypes
 from django.conf import settings
+from django.core.paginator import Paginator
 from django.http import JsonResponse
 from rest_framework import status, permissions, authentication
 from rest_framework.views import APIView
@@ -251,6 +252,54 @@ class FileUploadView(APIView):
                 'details': str(e)
             }
 
+
+class FileHistoryView(APIView):
+    """API endpoint for file history with pagination."""
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get(self, request, *args, **kwargs):
+        """Get file history for the authenticated user with pagination."""
+        try:
+            # Get pagination parameters
+            page = int(request.GET.get('page', 1))
+            page_size = min(int(request.GET.get('page_size', 10)), 100)
+            
+            # Filter files by user and order by most recent
+            files = UploadedFile.objects.filter(
+                uploaded_by=request.user
+            ).order_by('-uploaded_at')
+            
+            # Apply pagination
+            paginator = Paginator(files, page_size)
+            page_obj = paginator.get_page(page)
+            
+            # Serialize the data
+            serializer = UploadedFileSerializer(
+                page_obj, 
+                many=True,
+                context={'request': request}
+            )
+            
+            return Response({
+                'status': 'success',
+                'results': serializer.data,
+                'count': paginator.count,
+                'page': page,
+                'page_size': page_size,
+                'total_pages': paginator.num_pages,
+                'has_next': page_obj.has_next(),
+                'has_previous': page_obj.has_previous()
+            })
+            
+        except Exception as e:
+            return Response(
+                {
+                    'status': 'error',
+                    'message': str(e)
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 class FileListView(APIView):
     """API endpoint for listing files."""

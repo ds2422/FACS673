@@ -16,7 +16,7 @@ DB_NAME = os.getenv("DB_NAME")
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 1440))  # 24 hours
 JWT_AUDIENCE = os.getenv("JWT_AUDIENCE", "url-summarizer")
 JWT_ISSUER = os.getenv("JWT_ISSUER", "url-summarizer")
 

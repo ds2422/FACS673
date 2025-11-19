@@ -28,7 +28,7 @@ class Settings:
     # JWT
     SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-here-change-this-in-production")
     ALGORITHM = os.getenv("ALGORITHM", "HS256")
-    ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
+    ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "1440"))  # 24 hours
     
     # CORS
     CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*").split(",")

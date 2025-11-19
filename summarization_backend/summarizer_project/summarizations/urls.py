@@ -5,6 +5,7 @@ app_name = 'summarizations'
 
 urlpatterns = [
     path('', views.SummaryListView.as_view(), name='summary-list'),
+    path('history/', views.HistoryView.as_view(), name='summary-history'),
     path('public/', views.PublicSummaryListView.as_view(), name='public-summary-list'),
     path('users/', views.UserListView.as_view(), name='user-list'),
     path('<int:pk>/', views.SummaryDetailView.as_view(), name='summary-detail'),

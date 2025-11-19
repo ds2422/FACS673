@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from rest_framework import status
 import json
 from .models import DocumentComparison
+from django.core.paginator import Paginator
+from django.db.models import Q
 
 @api_view(['POST'])
 def compare_documents_view(request):
@@ -69,6 +71,102 @@ def get_comparison(request, comparison_id):
             'differences': comparison.differences,
             'created_at': comparison.created_at,
             'updated_at': comparison.updated_at
+        })
+        
+    except Exception as e:
+        return Response(
+            {'error': str(e)}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+@api_view(['GET'])
+def comparison_history(request):
+    """
+    Get the current user's comparison history with pagination.
+    Query parameters:
+    - page: Page number (default: 1)
+    - page_size: Items per page (default: 10, max: 100)
+    """
+    try:
+        # Get user_id from query params (from JWT token in real implementation)
+        user_id = request.GET.get('user_id')
+        if not user_id:
+            return Response(
+                {'error': 'user_id is required'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Get pagination parameters
+        page = int(request.GET.get('page', 1))
+        page_size = min(int(request.GET.get('page_size', 10)), 100)
+        
+        # Filter comparisons by user and order by most recent
+        comparisons = DocumentComparison.objects.filter(
+            user_id=user_id
+        ).order_by('-created_at')
+        
+        # Apply pagination
+        paginator = Paginator(comparisons, page_size)
+        page_obj = paginator.get_page(page)
+        
+        # Serialize the data
+        comparison_data = []
+        for comparison in page_obj:
+            comparison_data.append({
+                'id': comparison.id,
+                'source1_type': comparison.source1_type,
+                'source2_type': comparison.source2_type,
+                'summary': comparison.summary,
+                'created_at': comparison.created_at.isoformat(),
+                'updated_at': comparison.updated_at.isoformat() if hasattr(comparison, 'updated_at') else None
+            })
+        
+        return Response({
+            'results': comparison_data,
+            'count': paginator.count,
+            'page': page,
+            'page_size': page_size,
+            'total_pages': paginator.num_pages,
+            'has_next': page_obj.has_next(),
+            'has_previous': page_obj.has_previous()
+        })
+        
+    except Exception as e:
+        return Response(
+            {'error': str(e)}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+@api_view(['DELETE'])
+def delete_comparison_from_history(request, comparison_id):
+    """
+    Delete a specific comparison from user's history.
+    """
+    try:
+        # Get user_id from query params (from JWT token in real implementation)
+        user_id = request.GET.get('user_id')
+        if not user_id:
+            return Response(
+                {'error': 'user_id is required'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Find the comparison belonging to this user
+        comparison = DocumentComparison.objects.filter(
+            id=comparison_id,
+            user_id=user_id
+        ).first()
+        
+        if not comparison:
+            return Response(
+                {'error': 'Comparison not found in your history'}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        comparison.delete()
+        
+        return Response({
+            'message': 'Comparison deleted successfully'
         })
         
     except Exception as e:

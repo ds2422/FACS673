@@ -204,7 +204,8 @@ async def compare_documents(comparison: ComparisonRequest):
             "comparison_id": comparison_id,
             **comparison_result,
             "summary": summary,
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.utcnow().isoformat(),
+            "user_id": comparison.user_id  # Store user_id for history filtering
         }
 
         comparisons[comparison_id] = result
@@ -221,6 +222,54 @@ async def get_comparison(comparison_id: str):
         raise HTTPException(status_code=404, detail="Comparison not found")
     return comparisons[comparison_id]
 
+
+@app.get("/api/history")
+async def get_comparison_history(user_id: str = None, page: int = 1, page_size: int = 10):
+    """Get comparison history for a user with pagination."""
+    if user_id is None:
+        raise HTTPException(status_code=400, detail="user_id is required")
+    
+    # Filter comparisons by user_id (simulated - in real app this would be database query)
+    user_comparisons = [
+        comp for comp_id, comp in comparisons.items() 
+        if comp.get("user_id") == user_id
+    ]
+    
+    # Sort by most recent (using ID as proxy for timestamp)
+    user_comparisons.sort(key=lambda x: x.get("id", ""), reverse=True)
+    
+    # Apply pagination
+    start = (page - 1) * page_size
+    end = start + page_size
+    paginated_comparisons = user_comparisons[start:end]
+    
+    return {
+        "results": paginated_comparisons,
+        "count": len(user_comparisons),
+        "page": page,
+        "page_size": page_size,
+        "total_pages": (len(user_comparisons) + page_size - 1) // page_size,
+        "has_next": end < len(user_comparisons),
+        "has_previous": page > 1
+    }
+
+@app.delete("/api/history/{comparison_id}")
+async def delete_comparison_from_history(comparison_id: str, user_id: str = None):
+    """Delete a comparison from user's history."""
+    if user_id is None:
+        raise HTTPException(status_code=400, detail="user_id is required")
+    
+    if comparison_id not in comparisons:
+        raise HTTPException(status_code=404, detail="Comparison not found")
+    
+    comparison = comparisons[comparison_id]
+    if comparison.get("user_id") != user_id:
+        raise HTTPException(status_code=404, detail="Comparison not found in your history")
+    
+    # Delete the comparison
+    del comparisons[comparison_id]
+    
+    return {"message": "Comparison deleted successfully"}
 
 @app.get("/health")
 async def health_check():

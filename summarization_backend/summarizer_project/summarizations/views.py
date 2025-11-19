@@ -2,6 +2,7 @@ from rest_framework import status, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from django.core.paginator import Paginator
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.contrib.auth import get_user_model
 from .models import Summary
@@ -26,6 +27,44 @@ def get_user_from_token(request):
     # Return decoded payload with user info
     return payload, None
 
+
+class HistoryView(APIView):
+    """Dedicated history endpoint for summaries with pagination"""
+    permission_classes = [permissions.AllowAny]  # We handle JWT manually
+
+    def get(self, request):
+        """Get summary history for authenticated user with pagination"""
+        payload, error = get_user_from_token(request)
+        if error:
+            return error
+
+        user_id = payload.get("user_id")
+        
+        # Get pagination parameters
+        page = int(request.GET.get('page', 1))
+        page_size = min(int(request.GET.get('page_size', 10)), 100)
+        
+        # Filter summaries by user and order by most recent
+        summaries = Summary.objects.filter(
+            user_id=user_id
+        ).order_by('-created_at')
+        
+        # Apply pagination
+        paginator = Paginator(summaries, page_size)
+        page_obj = paginator.get_page(page)
+        
+        # Serialize the data
+        serializer = SummarySerializer(page_obj, many=True)
+        
+        return Response({
+            'results': serializer.data,
+            'count': paginator.count,
+            'page': page,
+            'page_size': page_size,
+            'total_pages': paginator.num_pages,
+            'has_next': page_obj.has_next(),
+            'has_previous': page_obj.has_previous()
+        })
 
 class SummaryListView(APIView):
     """GET: list summaries for authenticated user, POST: create summary"""

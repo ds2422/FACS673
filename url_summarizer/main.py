@@ -147,6 +147,26 @@ async def summarize_url(
         raise HTTPException(status_code=400, detail=str(e))
 
 
+@app.get("/history", response_model=List[schemas.Summary])
+async def get_user_history(
+    skip: int = 0,
+    limit: int = 100,
+    current_user: dict = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Get the current user's summary history with pagination.
+    This is a more intuitive endpoint than /summaries/me/
+    """
+    try:
+        user_id = current_user["user_id"]
+        summaries = crud.get_user_summaries_ordered(db, user_id=user_id, skip=skip, limit=limit)
+        return summaries
+    except Exception as e:
+        print(f"❌ Error fetching user history: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
+
+
 @app.get("/summaries/me/", response_model=List[schemas.Summary])
 async def read_user_summaries(
     skip: int = 0,
@@ -194,6 +214,55 @@ async def read_summary(
         raise HTTPException(status_code=404, detail="Summary not found")
 
     return db_summary
+
+
+@app.get("/history/{summary_id}", response_model=schemas.Summary)
+async def get_history_item(
+    summary_id: int,
+    current_user: dict = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Retrieve a specific summary from user's history by ID.
+    More intuitive endpoint than /summaries/{summary_id}
+    """
+    try:
+        user_id = current_user["user_id"]
+        db_summary = crud.get_user_summary_by_id(db, summary_id=summary_id, user_id=user_id)
+        
+        if db_summary is None:
+            raise HTTPException(status_code=404, detail="Summary not found in your history")
+
+        return db_summary
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ Error fetching history item: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.delete("/history/{summary_id}")
+async def delete_history_item(
+    summary_id: int,
+    current_user: dict = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Delete a specific summary from user's history by ID.
+    """
+    try:
+        user_id = current_user["user_id"]
+        success = crud.delete_user_summary(db, summary_id=summary_id, user_id=user_id)
+        
+        if not success:
+            raise HTTPException(status_code=404, detail="Summary not found in your history")
+    
+        return {"message": "Summary deleted successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ Error deleting history item: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @app.get("/health")
