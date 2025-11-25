@@ -90,7 +90,7 @@ async def health_check():
     return {"status": "Gateway is running"}
 @app.get("/")
 def root():
-    return {"message": "Gateway Service is running", "available_routes": ["/auth", "/file", "/summarizer"]}
+    return {"message": "Gateway Service is running", "available_routes": ["/auth", "/file", "/summarizer","/comparison","/backend"]}
 
 if __name__ == "__main__":
     import uvicorn
