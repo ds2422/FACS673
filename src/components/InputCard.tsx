@@ -1,159 +1,113 @@
-// src/components/InputCard.tsx
-import React, { useState } from "react";
-import { CheckCircle, Loader, Link as LinkIcon } from "lucide-react";
-import type { InputCardProps } from "../types";
+import React from "react";
+import type { SourceType } from "../types";
 import {
-  fetchUrlContent,
-  fetchYouTubeTranscript,
-  isYouTubeUrl,
-} from "../utils/urlFetcher";
+  Youtube,
+  Link as LinkIcon,
+  AlignLeft,
+  CheckCircle2,
+} from "lucide-react";
+
+interface InputCardProps {
+  index: number;
+  type: SourceType;
+  content: string;
+  onTypeChange: (value: string) => void;
+  onContentChange: (value: string) => void;
+  isActive: boolean;
+}
 
 const InputCard: React.FC<InputCardProps> = ({
   index,
+  type,
   content,
-  onChange,
+  onTypeChange,
+  onContentChange,
   isActive,
 }) => {
-  const [isFetching, setIsFetching] = useState(false);
-  const [fetchError, setFetchError] = useState<string | null>(null);
-  const [urlInput, setUrlInput] = useState("");
-
-  const handleFetchUrl = async () => {
-    if (!urlInput.trim()) {
-      setFetchError("Please enter a URL");
-      return;
+  // Dynamic Icon based on selection
+  const getIcon = () => {
+    switch (type) {
+      case "youtube":
+        return <Youtube size={18} className="text-red-500" />;
+      case "url":
+        return <LinkIcon size={18} className="text-blue-500" />;
+      default:
+        return <AlignLeft size={18} className="text-gray-500" />;
     }
-
-    setIsFetching(true);
-    setFetchError(null);
-
-    try {
-      // Check if it's a YouTube URL
-      if (isYouTubeUrl(urlInput)) {
-        const result = await fetchYouTubeTranscript(urlInput);
-        if (!result.success) {
-          setFetchError(result.error ?? "Failed to fetch YouTube transcript");
-        }
-      } else {
-        // Fetch regular URL content
-        const result = await fetchUrlContent(urlInput);
-
-        if (result.success && result.content) {
-          onChange(index, result.content);
-          setUrlInput("");
-          setFetchError(null);
-        } else {
-          setFetchError(result.error || "Failed to fetch URL content");
-        }
-      }
-    } catch (error) {
-      setFetchError(
-        error instanceof Error ? error.message : "An error occurred"
-      );
-    } finally {
-      setIsFetching(false);
-    }
-  };
-
-  const handleClearInput = () => {
-    onChange(index, "");
-    setUrlInput("");
-    setFetchError(null);
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <label className="mb-3 text-sm font-semibold text-gray-700 flex items-center gap-2">
-        <div
-          className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white transition-all ${
-            isActive
-              ? "bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg"
-              : "bg-gray-300"
-          }`}
-        >
-          {index + 1}
-        </div>
-        <span>Source {index + 1}</span>
-      </label>
-
-      {/* URL Fetcher Section */}
-      <div className="mb-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
-        <div className="flex gap-2 items-end">
-          <div className="flex-1">
-            <label className="text-xs font-medium text-blue-800 mb-1 block">
-              Fetch from URL
-            </label>
-            <input
-              type="text"
-              placeholder="Paste URL here..."
-              value={urlInput}
-              onChange={(e) => {
-                setUrlInput(e.target.value);
-                setFetchError(null);
-              }}
-              onKeyPress={(e) => {
-                if (e.key === "Enter") {
-                  handleFetchUrl();
+    <div
+      className={`
+        group relative h-full flex flex-col bg-white rounded-2xl transition-all duration-300
+        border-2 ${
+          isActive
+            ? "border-indigo-500 shadow-xl shadow-indigo-100 translate-y-[-4px]"
+            : "border-transparent shadow-md hover:shadow-lg hover:border-slate-200"
+        }
+    `}
+    >
+      {/* Card Header */}
+      <div className="p-4 border-b border-slate-100 bg-slate-50/50 rounded-t-2xl flex justify-between items-center">
+        <div className="flex items-center gap-2">
+          <span
+            className={`
+                flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold
+                ${
+                  isActive
+                    ? "bg-indigo-600 text-white"
+                    : "bg-slate-200 text-slate-500"
                 }
-              }}
-              disabled={isFetching}
-              className="w-full px-3 py-2 text-sm border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
-            />
-          </div>
-          <button
-            onClick={handleFetchUrl}
-            disabled={isFetching || !urlInput.trim()}
-            className={`px-3 py-2 rounded text-sm font-medium flex items-center gap-1 transition ${
-              isFetching || !urlInput.trim()
-                ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                : "bg-blue-500 text-white hover:bg-blue-600"
-            }`}
+            `}
           >
-            {isFetching ? (
-              <>
-                <Loader size={16} className="animate-spin" />
-                <span>Fetching</span>
-              </>
-            ) : (
-              <>
-                <LinkIcon size={16} />
-                <span>Fetch</span>
-              </>
-            )}
-          </button>
+            {index + 1}
+          </span>
+          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+            Source
+          </span>
         </div>
 
-        {fetchError && (
-          <div className="mt-2 p-2 bg-red-100 border border-red-300 rounded text-xs text-red-800">
-            {fetchError}
+        <div className="relative">
+          <div className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none">
+            {getIcon()}
           </div>
-        )}
+          <select
+            value={type}
+            onChange={(e) => onTypeChange(e.target.value)}
+            className="pl-9 pr-3 py-1.5 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 cursor-pointer hover:bg-slate-50 transition-colors appearance-none"
+          >
+            <option value="text">Text</option>
+            <option value="youtube">YouTube</option>
+            <option value="url">Website</option>
+          </select>
+        </div>
       </div>
 
-      {/* Text Input Section */}
-      <textarea
-        className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200 h-40 resize-none text-sm bg-white hover:border-gray-400"
-        placeholder="Or paste your document, transcript, or web content here..."
-        value={content}
-        onChange={(e) => onChange(index, e.target.value)}
-      />
+      {/* Input Area */}
+      <div className="flex-grow p-4">
+        <textarea
+          className="w-full h-full min-h-[140px] text-sm text-slate-700 placeholder-slate-400 bg-transparent border-none resize-none focus:ring-0 p-0 leading-relaxed"
+          placeholder={
+            type === "youtube"
+              ? "Paste YouTube Link (e.g., https://youtu.be/...)"
+              : type === "url"
+              ? "Paste Article URL (e.g., https://example.com)"
+              : "Start typing or paste content here..."
+          }
+          value={content}
+          onChange={(e) => onContentChange(e.target.value)}
+        />
+      </div>
 
-      {/* Footer */}
-      <div className="mt-2 flex justify-between items-center">
-        {content.trim() && (
-          <div className="text-xs text-gray-500 flex items-center gap-1">
-            <CheckCircle size={14} className="text-green-500" />
-            {content.length} characters
-          </div>
-        )}
-        {content.trim() && (
-          <button
-            onClick={handleClearInput}
-            className="text-xs text-red-600 hover:text-red-800 font-medium"
-          >
-            Clear
-          </button>
-        )}
+      {/* Active Indicator Status */}
+      <div className="px-4 pb-4 flex justify-end">
+        <div
+          className={`transition-all duration-500 ${
+            isActive ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <CheckCircle2 size={20} className="text-emerald-500" />
+        </div>
       </div>
     </div>
   );

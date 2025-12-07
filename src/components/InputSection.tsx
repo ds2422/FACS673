@@ -1,9 +1,19 @@
 import React from "react";
 import InputCard from "./InputCard";
-import type { InputSectionProps } from "../types";
+import type { InputData } from "../types/index.ts"; // Ensure these are imported
+
+interface InputSectionProps {
+  inputs: InputData[]; // CHANGED: Now expects array of objects
+  onInputChange: (
+    index: number,
+    field: "content" | "type",
+    value: string
+  ) => void; // CHANGED: Handles type updates
+  activeCount: number;
+}
 
 const InputSection: React.FC<InputSectionProps> = ({
-  inputContents,
+  inputs,
   onInputChange,
   activeCount,
 }) => {
@@ -18,16 +28,18 @@ const InputSection: React.FC<InputSectionProps> = ({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {inputContents.map((content, index) => (
+        {inputs.map((inputData, index) => (
           <div
-            key={index}
+            key={inputData.id || index}
             className="bg-white p-5 rounded-xl shadow-md hover:shadow-lg transition-shadow border border-gray-200"
           >
             <InputCard
               index={index}
-              content={content}
-              onChange={onInputChange}
-              isActive={content.trim() !== ""}
+              type={inputData.type} // Pass Type
+              content={inputData.content} // Pass Content
+              onTypeChange={(val) => onInputChange(index, "type", val)} // New Handler
+              onContentChange={(val) => onInputChange(index, "content", val)} // New Handler
+              isActive={inputData.content.trim() !== ""}
             />
           </div>
         ))}

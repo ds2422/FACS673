@@ -1,22 +1,70 @@
-export const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || "";
-export const API_URL = import.meta.env.VITE_API_URL || "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent";
+// src/utils/api.ts
+import { auth } from "../firebaseConfig";
+import type { InputData, SummaryResponse, HistoryItem } from "../types";
 
-export const SYSTEM_PROMPT = `You are an expert document synthesis AI. Analyze multiple pieces of text and create a single, cohesive, professional summary. Ensure the summary is well-structured, captures all key themes, and maintains a logical flow.`;
+const API_BASE_URL = "http://127.0.0.1:8000/api"; // Your Django URL
 
-export interface ApiPayload {
-  contents: Array<{
-    parts: Array<{
-      text: string;
-    }>;
-  }>;
-  systemInstruction: {
-    parts: Array<{
-      text: string;
-    }>;
-  };
-}
+export const generateSummary = async (inputs: InputData[]): Promise<string> => {
+  const user = auth.currentUser;
+  
+  if (!user) {
+    throw new Error("User must be logged in to generate summaries.");
+  }
 
-export const createPayload = (userQuery: string): ApiPayload => ({
-  contents: [{ parts: [{ text: userQuery }] }],
-  systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-});
+  // Get the Firebase Token to prove identity to Django
+  const token = await user.getIdToken();
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/summarize/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`, // Send token
+      },
+      // Backend expects a list of objects with 'type' and 'value'
+      body: JSON.stringify({
+        inputs: inputs.map(i => ({
+          type: i.type,
+          value: i.content
+        })) 
+      }),
+    });
+
+    const data: SummaryResponse = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to generate summary");
+    }
+
+    return data.summary;
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error;
+  }
+};
+
+
+export const fetchHistory = async (): Promise<HistoryItem[]> => {
+  const user = auth.currentUser;
+  if (!user) return [];
+
+  const token = await user.getIdToken();
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/history/`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch history");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("History Error:", error);
+    return [];
+  }
+};

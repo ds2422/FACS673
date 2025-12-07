@@ -1,27 +1,30 @@
 import React from "react";
-import { AlertCircle } from "lucide-react";
+import { Sparkles, BrainCircuit } from "lucide-react";
 
 const Header: React.FC = () => {
   return (
-    <header className="text-center mb-12 pt-4">
-      <div className="mb-3 inline-block">
-        <div className="text-5xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 bg-clip-text text-transparent">
-          Content Synthesizer
+    <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200/60 shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          <div className="flex items-center gap-3">
+            <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-2 rounded-xl shadow-lg shadow-indigo-200">
+              <BrainCircuit className="text-white h-6 w-6" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
+                Nexus AI
+              </h1>
+              <p className="text-xs text-slate-500 font-medium tracking-wide uppercase">
+                Multi-Source Synthesis
+              </p>
+            </div>
+          </div>
+
+          {/* <div className="hidden md:flex items-center gap-2 text-sm font-medium text-slate-500 bg-slate-100/50 px-3 py-1 rounded-full border border-slate-200">
+            <Sparkles size={14} className="text-amber-500" />
+            <span>Powered by Gemini 1.5</span>
+          </div> */}
         </div>
-      </div>
-      <p className="text-lg text-gray-600 mb-6 max-w-2xl mx-auto">
-        Intelligently combine multiple sources into comprehensive, coherent
-        summaries powered by AI
-      </p>
-      <div className="flex items-start gap-3 bg-blue-50 p-4 rounded-lg border border-blue-200 max-w-2xl mx-auto">
-        <div className="text-blue-600 flex-shrink-0 mt-0.5">
-          <AlertCircle size={20} />
-        </div>
-        <p className="text-sm text-blue-800">
-          <span className="font-semibold">How to use:</span> Paste up to 5
-          sources (web content, documents, transcripts) and let AI synthesize
-          them into a unified summary.
-        </p>
       </div>
     </header>
   );

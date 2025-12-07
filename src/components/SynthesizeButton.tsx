@@ -1,38 +1,51 @@
 import React from "react";
-import { Loader } from "lucide-react";
-import type { SynthesizeButtonProps } from "../types";
+import ActionButton from "./ActionButton";
+import { generateSummary } from "../utils/api";
+import type { InputData } from "../types";
+
+interface SynthesizeButtonProps {
+  inputs: InputData[];
+  setSummary: (s: string) => void;
+  setLoading: (l: boolean) => void;
+}
 
 const SynthesizeButton: React.FC<SynthesizeButtonProps> = ({
-  isLoading,
-  isDisabled,
-  onClick,
+  inputs,
+  setSummary,
+  setLoading,
 }) => {
+  // Check if at least one input has text content
+  const hasValidInput = inputs.some(
+    (input) => input.content && input.content.trim().length > 0
+  );
+
+  const handleSynthesize = async () => {
+    if (!hasValidInput) return;
+
+    setLoading(true);
+    setSummary("");
+
+    try {
+      const validInputs = inputs.filter((i) => i.content.trim() !== "");
+      const result = await generateSummary(validInputs);
+      setSummary(result);
+    } catch (error) {
+      console.error(error);
+      setSummary("Error generating summary. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <button
-      onClick={onClick}
-      disabled={isLoading || isDisabled}
-      className={`
-        px-8 py-3.5 text-base font-bold rounded-full shadow-xl transition duration-300 transform
-        flex items-center justify-center gap-2 min-w-max
-        ${
-          isLoading || isDisabled
-            ? "bg-gray-400 text-gray-600 cursor-not-allowed"
-            : "bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:shadow-2xl hover:scale-105 active:scale-95"
-        }
-      `}
-    >
-      {isLoading ? (
-        <>
-          <Loader size={20} className="animate-spin" />
-          Synthesizing...
-        </>
-      ) : (
-        <>
-          <span>✨</span>
-          Synthesize Summary
-        </>
-      )}
-    </button>
+    <div className="flex justify-center mt-8">
+      <ActionButton
+        onClick={handleSynthesize}
+        label="Synthesize Summary"
+        // Logic: Disable if no valid input OR if currently loading
+        disabled={!hasValidInput}
+      />
+    </div>
   );
 };
 
