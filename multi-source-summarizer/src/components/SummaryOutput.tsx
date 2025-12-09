@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Loader2, AlertTriangle, Copy, Check, FileText } from "lucide-react";
+import { AlertTriangle, Copy, Check, FileText } from "lucide-react";
 import type { SummaryOutputProps } from "../types";
 import { Sparkles } from "lucide-react";
 
@@ -29,7 +29,11 @@ const SummaryOutput: React.FC<SummaryOutputProps> = ({
         const content = trimmedLine.substring(2);
         const parts = content.split(/(\*\*.*?\*\*)/g);
         return (
-          <div key={index} className="flex gap-3 mb-2">
+          <div
+            data-testid="summary-result"
+            key={index}
+            className="flex gap-3 mb-2"
+          >
             <div className="min-w-[6px] h-[6px] rounded-full bg-indigo-500 mt-2.5"></div>
             <p className="text-slate-700 leading-7">
               {parts.map((part, i) =>
@@ -112,7 +116,10 @@ const SummaryOutput: React.FC<SummaryOutputProps> = ({
             </div>
 
             {/* Content */}
-            <article className="p-8 sm:p-12 max-w-none">
+            <article
+              data-testid="summary-result"
+              className="p-8 sm:p-12 max-w-none"
+            >
               {renderFormattedText(summary)}
             </article>
           </div>

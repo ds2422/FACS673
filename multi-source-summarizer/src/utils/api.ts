@@ -13,6 +13,7 @@ export const generateSummary = async (inputs: InputData[]): Promise<string> => {
 
   // Get the Firebase Token to prove identity to Django
   const token = await user.getIdToken();
+  console.log("Firebase Token:", token);
 
   try {
     const response = await fetch(`${API_BASE_URL}/summarize/`, {

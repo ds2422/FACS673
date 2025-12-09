@@ -16,6 +16,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
 }) => {
   return (
     <button
+      data-testid="synthesize-btn"
       onClick={onClick}
       disabled={disabled || isLoading}
       className={`

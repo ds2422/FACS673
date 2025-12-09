@@ -88,6 +88,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
       >
         <input
           type="email"
+          data-testid="email-input"
           placeholder="Email address"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -97,13 +98,19 @@ const LoginForm: React.FC<LoginFormProps> = ({
         <input
           type="password"
           placeholder="Password"
+          data-testid="password-input"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
           style={inputStyle}
         />
 
-        <button type="submit" disabled={loading} style={buttonStyle}>
+        <button
+          type="submit"
+          data-testid="login-btn"
+          disabled={loading}
+          style={buttonStyle}
+        >
           {loading ? "Logging in..." : "Login"}
         </button>
       </form>

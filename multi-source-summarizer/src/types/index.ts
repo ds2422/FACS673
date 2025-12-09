@@ -1,6 +1,6 @@
 // src/types/index.ts
 
-export type SourceType = 'text' | 'url' | 'youtube';
+export type SourceType = 'text' | 'url' | 'youtube' | 'pdf';
 
 export interface InputData {
   id: string;
