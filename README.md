@@ -8,8 +8,14 @@
 ![Gemini](https://img.shields.io/badge/AI-Google%20Gemini%201.5-purple)
 
 
-[Presentation](https://docs.google.com/presentation/d/15fMkT7vzWuB8F309X0XDnxAYXU_pV2hWQnzHnKUrv6A/edit?usp=sharing)
+# [Presentation](https://docs.google.com/presentation/d/15fMkT7vzWuB8F309X0XDnxAYXU_pV2hWQnzHnKUrv6A/edit?usp=sharing)
 
+# Team Members and Role
+- Data Architect - Praise Adegbite
+- MicroServices - Dhairya Shah
+- UI/UX Designer -  Moni Baxi
+- API Engineer - Shivani Reddy Rokkam
+- Frontend Developer, Quality Analyst - Shriya Sharma (Team Lead)
 
 **Nexus AI** is a powerful SaaS application designed to combat information overload. It aggregates content from up to **5 different sources**—including YouTube videos, PDF documents, web articles, and raw text—and uses Google's Gemini AI to synthesize them into a single, coherent summary.
 
