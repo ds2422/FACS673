@@ -71,3 +71,9 @@ Before you begin, ensure you have the following installed:
 git clone https://github.com/your-username/nexus-ai.git
 cd nexus-ai
 ```
+
+## Sprint
+
+Please refer to the our JIRA link below to track the progress of the applicatio completed in the Sprint 1
+
+[Jira](https://njit-team-fhi2acbj.atlassian.net/jira/software/projects/CT/boards/2/backlog?atlOrigin=eyJpIjoiY2ZhZjZmNzNkZmNlNDNmYmEwZjgyZGUwNmE2MGY1MDIiLCJwIjoiaiJ9)
